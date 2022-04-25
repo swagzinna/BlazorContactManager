@@ -1,0 +1,129 @@
+.add-view-container {
+    height: 100%;
+    align-items: stretch;
+}
+.gender-pain {
+    height: 50px;
+    min-height: 20px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.group {
+    height: 31px;
+    min-height: 20px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.group_1 {
+    height: 25px;
+    min-height: 10px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.edit-contact-pain {
+    padding: 16px;
+    flex-grow: 1;
+    flex-basis: 0;
+    min-height: 50px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.birthday-text {
+    margin: 17px;
+    width: 125px;
+    height: max-content;
+    min-width: min-content;
+}
+.text {
+    margin: 2px;
+    height: max-content;
+    min-width: min-content;
+}
+.gender-text {
+    width: 140px;
+    margin: 5px;
+    height: max-content;
+    min-width: min-content;
+}
+.email-pane {
+    width: 888px;
+    height: 60px;
+    min-height: 50px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.error-text {
+    width: 322px;
+    color: hsla(var(--igc-error-500));
+    margin: 5px;
+    height: max-content;
+    min-width: min-content;
+}
+.group_2 {
+    width: 50px;
+    min-height: 50px;
+    min-width: 50px;
+    align-items: stretch;
+}
+.confirm-text {
+    width: 474px;
+    margin: 5px;
+    height: max-content;
+    min-width: min-content;
+}
+.text_1 {
+    margin: 13px;
+    width: 125px;
+    height: max-content;
+    min-width: min-content;
+}
+.group_3 {
+    height: 60px;
+    min-height: 50px;
+    position: relative;
+    min-width: 50px;
+    align-items: stretch;
+}
+.element {
+    height: max-content;
+    min-width: min-content;
+}
+.gender-radio-buttons {
+    width: max-content;
+    margin: 5px;
+    height: max-content;
+}
+.birthday-picker {
+    min-width: 120px;
+    flex-shrink: 0;
+    margin: 5px;
+    height: max-content;
+}
+.radio {
+    padding: 8px;
+}
+.input {
+    width: 349px;
+    min-width: min-content;
+    flex-shrink: 0;
+    margin: 5px;
+    height: max-content;
+}
+.button {
+    min-width: min-content;
+    flex-shrink: 0;
+    margin: 5px;
+    height: max-content;
+}
+.row {
+    display: flex;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}

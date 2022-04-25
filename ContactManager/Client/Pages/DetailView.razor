@@ -1,0 +1,80 @@
+@page "/detail-view/{url}"
+@inject NavigationManager NavigationManager
+@inject IContactManagerService ContactManagerService
+
+@using ContactManager.Client.Services;
+
+<div class="detail-view-container column">
+    <div class="detail-pain column">
+        <div class="contact-pain row">
+            <MudStack>
+                <MudPaper Class="pa-4">
+                    <MudStack Row="true"> 
+                        <MudAvatar Color="Color.Secondary" Variant="Variant.Filled">
+                            <MudIcon Color="Color.Dark" Icon="@Icons.Filled.Person" />
+                        </MudAvatar>
+                        <MudStack>
+                            <MudText Typo="Typo.h5" GutterBottom="true">@selectedContact.name</MudText>
+                            <MudText Typo="Typo.body1" GutterBottom="true">@selectedContact.mail</MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+
+                <MudPaper Class="pa-4">
+                    <MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1" GutterBottom="true">Geschlecht:</MudText>
+                            <MudText Typo="Typo.body1" GutterBottom="true">@selectedContact.gender</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1" GutterBottom="true">Adresse:</MudText>
+                            <MudText Typo="Typo.body1" GutterBottom="true">@selectedContact.address</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1" GutterBottom="true">Geburtsdatum:</MudText>
+                            <MudText Typo="Typo.body1" GutterBottom="true">@selectedContact.birthday</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudText Typo="Typo.body1" GutterBottom="true">Telefonnummer:</MudText>
+                            <MudText Typo="Typo.body1" GutterBottom="true">@selectedContact.phone</MudText>
+                        </MudStack>
+                        <MudStack Row="true">
+                            <MudButton Color=Color.Secondary Size="Size.Small" Variant="Variant.Filled" @onclick="@(e => Navigate("/edit-view"))">Kontaktdaten bearbeiten</MudButton>
+                            <MudButton Color=Color.Secondary Size="Size.Small" Variant="Variant.Filled" @onclick="@deleteContact">Kontakt löschen</MudButton>
+                            <div class="group row"></div>
+                            <MudButton Color=Color.Secondary Size="Size.Small" Variant="Variant.Filled" @onclick="@(e => Navigate("/"))">Zurück</MudButton>
+                        </MudStack>
+                    </MudStack>
+                    
+                </MudPaper>
+
+            </MudStack>
+        </div>
+    </div>
+</div>
+
+@code {
+    private Contact selectedContact;
+
+    [CascadingParameter]
+    public EventCallback refreshMain{ get; set; }
+
+    [Parameter]
+    public string Url{ get; set; }
+
+    private void Navigate(string path)
+    {
+        NavigationManager.NavigateTo(path);
+    }
+
+    protected override void OnParametersSet()
+    {
+        selectedContact = ContactManagerService.getSelectedContact();
+    }
+
+    public async Task deleteContact(){
+        var result = await ContactManagerService.removeContact(selectedContact);
+        await refreshMain.InvokeAsync();
+        this.Navigate("/");
+    }
+}

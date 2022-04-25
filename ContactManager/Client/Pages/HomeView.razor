@@ -1,0 +1,24 @@
+@page "/"
+@inject NavigationManager NavigationManager
+
+    <div class="home-view-container row">
+        <div class="home-pain column">
+            <MudContainer MaxWidth="MaxWidth.Small" Class="object-left">
+                <MudText Typo="Typo.h6" GutterBottom="true">Willkommen bei Ihrer persönlichen Kontakt und Adressenverwaltung</MudText>
+            </MudContainer>
+            <MudContainer MaxWidth="MaxWidth.Small" Class="object-left">
+                <MudStack Row="true">
+                    <div class="group row">
+                        <MudButton Size="Size.Small" Color=Color.Secondary FullWidth="false" Variant="Variant.Filled" @onclick="@(e => Navigate("/add-view"))">Neuen Kontakt erstellen</MudButton>
+                    </div>
+                </MudStack>
+            </MudContainer>
+        </div>
+    </div>
+
+@code {
+    private void Navigate(string path)
+    {
+        NavigationManager.NavigateTo(path);
+    }    
+}

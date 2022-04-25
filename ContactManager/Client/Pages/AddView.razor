@@ -1,0 +1,159 @@
+@page "/add-view"
+@inject NavigationManager NavigationManager
+@inject IContactManagerService ContactManagerService
+
+@using ContactManager.Client.Services;
+@using System
+
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<div class="add-view-container row">
+    <div class="edit-contact-pain column">
+        
+        <MudStack>
+            <MudContainer MaxWidth="MaxWidth.Small" Class="object-left">
+                <MudText Typo="Typo.h6" GutterBottom="true">Neuen Kontakt erstellen</MudText>
+            </MudContainer>
+            <div class="group_3 row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">Name:</MudText>
+                <MudTextField @bind-Value="nameValue" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            </div>
+            <div class="gender-pain row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">Geschlecht:</MudText>
+                <MudRadioGroup @bind-SelectedOption="@genderValue">
+                    <MudRadio Color="Color.Secondary" Option="@("Männlich")">Männlich</MudRadio>
+                    <MudRadio Color="Color.Secondary" Option="@("Weiblich")">Weiblich</MudRadio>
+                    <MudRadio Color="Color.Secondary" Option="@("Divers")">Divers</MudRadio>
+                </MudRadioGroup>
+            </MudStack>
+            </div>
+            <div class="group_3 row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">Adresse:</MudText>
+                <MudTextField @bind-Value="addressValue" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            </div>
+            <div class="email-pane row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">E-Mail:</MudText>
+                <MudTextField @bind-Value="mailValue" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            </div>
+            <div class="group_3 row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">Telefonnummer:</MudText>
+                <MudTextField @bind-Value="phoneValue" Variant="Variant.Outlined"></MudTextField>
+            </MudStack>
+            </div>
+            <div class="group_3 row">
+            <MudStack Row="true">
+                <MudText Typo="Typo.body1" GutterBottom="true">Geburtsdatum:</MudText>
+                <MudDatePicker @bind-Date="dateTimeValue" />
+            </MudStack>
+            </div>
+            <div class="group_3 row">
+                <MudContainer MaxWidth="MaxWidth.Small" Class="object-left">
+                    <MudButton Color=Color.Secondary Size="Size.Small" Variant="Variant.Filled" @onclick="@createContact">Kontakt erstellen</MudButton>
+                    <MudButton Color=Color.Secondary Size="Size.Small" Variant="Variant.Filled" @onclick="@(e => Navigate("/"))">Zurück</MudButton>
+                </MudContainer>
+            </div>
+            <MudText Typo="Typo.body1" Class="pa-4 red-text text-accent-4" hidden="@errorIsHidden">@errorMessage</MudText>
+        </MudStack>
+
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public EventCallback refreshMain{ get; set; }
+
+    private int id;
+    private List<Contact> contactList;
+    private string nameValue = "";
+    private string mailValue = "";
+    private string genderValue = "";
+    private string addressValue = "";
+    private string phoneValue = "";
+    private string birthdayValue = "";
+    private DateTime? dateTimeValue = null;
+
+    private bool errorIsHidden = true;
+    private string errorMessage = string.Empty;
+
+    private void Navigate(string path)
+    {
+        NavigationManager.NavigateTo(path);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        contactList = await ContactManagerService.getContactList();
+        id = contactList.Count;
+    }
+
+    private async Task createContact(){
+
+        errorIsHidden = true;
+        errorMessage = string.Empty;
+        contactList = await ContactManagerService.getContactList();
+        id += 1;
+
+        Contact newContact = new Contact();
+
+        newContact.name = nameValue;
+        newContact.mail = mailValue;
+        newContact.gender = genderValue;
+        newContact.address = addressValue;        
+        newContact.phone = phoneValue;
+        newContact.Id = id;
+        newContact.birthday = birthdayValue;
+
+        if(dateTimeValue != null){
+            DateTime dateOnly = dateTimeValue.Value.Date;
+            newContact.birthday = dateOnly.ToString("d");
+        }
+
+        if (!ContactManagerService.isValidEmail(newContact.mail))
+        {
+            errorIsHidden = false;
+            errorMessage="Bitte wählen Sie eine korrekte E-Mail Adresse!";
+            return;
+        }
+
+        if(ContactManagerService.mailIsTaken(newContact, contactList))
+        {
+            errorIsHidden = false;
+            errorMessage="Die E-Mail Adresse ist bereits vergeben. Bitte wählen Sie eine andere E-Mail Adresse";
+            return;
+        }
+
+        if (ContactManagerService.isValidContact(newContact))
+        {
+            var result = await ContactManagerService.addContact(newContact);
+
+            nameValue = string.Empty;
+            mailValue = string.Empty;
+            genderValue = string.Empty;
+            addressValue = string.Empty;
+            birthdayValue = string.Empty;
+            phoneValue = string.Empty;
+            dateTimeValue = null;
+
+            await refreshMain.InvokeAsync();
+            //this.Navigate("/");
+        }
+        else
+        {
+            errorIsHidden = false;
+            errorMessage="Bitte geben Sie einen Namen und eine E-Mail Adresse für diesen Kontakt an";
+            return;
+        }
+
+    } 
+    
+}

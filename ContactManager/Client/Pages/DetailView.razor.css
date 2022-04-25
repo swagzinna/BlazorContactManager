@@ -1,0 +1,71 @@
+.detail-view-container {
+    height: 100%;
+    align-items: stretch;
+}
+.detail-pain {
+    height: 962px;
+    padding: 16px;
+    min-width: 50px;
+    min-height: 50px;
+    position: relative;
+    align-items: stretch;
+}
+.contact-pain {
+    height: 106px;
+    width: 925px;
+    min-width: 50px;
+    min-height: 50px;
+    position: relative;
+    align-items: stretch;
+}
+.group {
+    width: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    align-items: stretch;
+}
+.name-text {
+    margin: 15px;
+    height: max-content;
+    min-width: min-content;
+}
+.email-text {
+    margin: 10px;
+    height: max-content;
+    min-width: min-content;
+}
+.name-mail-pane {
+    min-width: 50px;
+    min-height: 50px;
+    position: relative;
+    align-items: stretch;
+}
+.group_1 {
+    height: 40px;
+    min-width: 30px;
+    min-height: 30px;
+    position: relative;
+    align-items: stretch;
+}
+.text {
+    margin: 5px;
+    height: max-content;
+    min-width: min-content;
+}
+.avatar::part(base) {
+    color: hsla(var(--igc-gray-800));
+    background-color: hsla(var(--igc-gray-400));
+}
+.button {
+    margin: 5px;
+    height: max-content;
+    min-width: min-content;
+    flex-shrink: 0;
+}
+.row {
+    display: flex;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}

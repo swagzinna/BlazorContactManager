@@ -1,0 +1,78 @@
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject IContactManagerService ContactManagerService
+
+@using ContactManager.Client.Services;
+
+<MudThemeProvider/>
+
+
+<MudLayout>
+    <MudMainContent>
+        <div class="master-view-container column">
+            <MudAppBar Color="Color.Primary" Fixed="false">
+                <MudIconButton Icon="@Icons.Filled.Home" Edge="Edge.Start" @onclick="@(e => Navigate("/"))" />
+                <MudIconButton Icon="@Icons.Filled.AddBox" Edge="Edge.Start" @onclick="@(e => Navigate("/add-view"))" />
+                <MudSpacer />
+                <MudText Typo="Typo.h5">Pers&ouml;nliche Adressverwaltung</MudText>
+            </MudAppBar>
+
+            <div class="contact-pane row">      
+                <MudPaper Class="overflow-scroll" Width="25%" Height="600px">
+                    <MudContainer MaxWidth="MaxWidth.Small" Class="object-left">
+                        <MudText Typo="Typo.h6" GutterBottom="true">Kontakt&uuml;bersicht</MudText>
+                    </MudContainer>
+                    <MudContainer MaxWidth="MaxWidth.Small">
+                        <MudList Clickable="true" SelectedValue="@selectedContact" >
+                        <MudListSubheader>
+                            @contactList.Count Kontakte
+                        </MudListSubheader> 
+                        @foreach (var contact in contactList){
+                            <MudListItem Text="@contact.name" Icon="@Icons.Filled.AccountCircle" Value="@contact" OnClick="@(()=>{selectedContact=contact; this.showContact();})" />
+                        }
+                        </MudList>
+                    </MudContainer>
+                </MudPaper>
+                <MudPaper Width="50%">
+                    <CascadingValue Value=refreshMain>
+                        @Body
+                    </CascadingValue>
+                </MudPaper>
+            </div>
+        </div>
+
+        </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme Theme = new MudTheme();
+    private Contact selectedContact;
+    private List<Contact> contactList = new List<Contact>();
+    private string searchValue;
+
+    EventCallback refreshMain => EventCallback.Factory.Create(this, refresh);
+
+    private void Navigate(string path)
+    {
+        NavigationManager.NavigateTo(path);  
+    }   
+
+    protected override async Task OnInitializedAsync()
+    {
+        contactList = await ContactManagerService.getContactList();
+    }
+
+    private async Task refresh()
+    {
+        contactList = await ContactManagerService.getContactList();
+    }
+
+    private void showContact()
+    {
+        ContactManagerService.setSelectedContact(selectedContact);
+        Console.WriteLine(selectedContact.name);
+        this.Navigate($"/detail-view/{selectedContact.name}");
+    }
+
+}
+
