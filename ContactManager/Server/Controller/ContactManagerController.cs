@@ -59,5 +59,10 @@ namespace ContactManager.Server.Controller
             return contact;
         }
 
+        [HttpGet("{id}")]
+        public ActionResult<List<Contact>> getContactsForAccount(int id)
+        {
+            return Ok(_context.Contacts.Where(x => x.accountID == id).ToList());
+        }
     }
 }

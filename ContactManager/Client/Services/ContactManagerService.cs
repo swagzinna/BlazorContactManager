@@ -8,6 +8,7 @@ namespace ContactManager.Client.Services
     {
         private readonly HttpClient _http;
         private Contact selectedContact = new Contact();
+        private Account selectedAccount = new Account();
 
         public ContactManagerService(HttpClient http)
         {
@@ -78,6 +79,32 @@ namespace ContactManager.Client.Services
                 return true;
             }
             return false;
+        }
+
+        public async Task<List<Account>> getAccountList()
+        {
+            return await _http.GetFromJsonAsync<List<Account>>("api/Account");
+        }
+
+        public async Task<Account> addAccount(Account newAccount)
+        {
+            var result = await _http.PostAsJsonAsync("api/Account", newAccount);
+            return await result.Content.ReadFromJsonAsync<Account>();
+        }
+
+        public Account getSelectedAccount()
+        {
+            return selectedAccount;
+        }
+
+        public void setSelectedAccount(Account newSelectedAccount)
+        {
+            this.selectedAccount = newSelectedAccount;
+        }
+
+        public async Task<List<Contact>> getContactsForAccount(Account account)
+        {
+            return await _http.GetFromJsonAsync<List<Contact>>($"api/ContactManager/{account.Id}");
         }
     }
 }

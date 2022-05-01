@@ -73,6 +73,7 @@
     public EventCallback refreshMain{ get; set; }
 
     private int id;
+    private Account account=new Account();
     private List<Contact> contactList;
     private string nameValue = "";
     private string mailValue = "";
@@ -94,10 +95,12 @@
     {
         contactList = await ContactManagerService.getContactList();
         id = contactList.Count;
+        account = ContactManagerService.getSelectedAccount();
     }
 
     private async Task createContact(){
 
+        account = ContactManagerService.getSelectedAccount();
         errorIsHidden = true;
         errorMessage = string.Empty;
         contactList = await ContactManagerService.getContactList();
@@ -105,6 +108,7 @@
 
         Contact newContact = new Contact();
 
+        newContact.accountID = account.Id;
         newContact.name = nameValue;
         newContact.mail = mailValue;
         newContact.gender = genderValue;

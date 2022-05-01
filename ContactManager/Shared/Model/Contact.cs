@@ -14,6 +14,7 @@ namespace ContactManager.Shared.Model
         public string address { get; set; }
         public string birthday { get; set; }
         public string phone { get; set; } 
+        public int accountID { get; set; }
 
         public Contact()
         {

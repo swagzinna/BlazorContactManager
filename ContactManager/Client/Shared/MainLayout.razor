@@ -1,21 +1,51 @@
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject IContactManagerService ContactManagerService
+@inject IDialogService DialogService
 
 @using ContactManager.Client.Services;
 
 <MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 
 <MudLayout>
     <MudMainContent>
         <div class="master-view-container column">
             <MudAppBar Color="Color.Primary" Fixed="false">
-                <MudIconButton Icon="@Icons.Filled.Home" Edge="Edge.Start" @onclick="@(e => Navigate("/"))" />
+                <MudIconButton Icon="@Icons.Filled.Home" Edge="Edge.Start" @onclick="@(e => Navigate("/"))" />        
                 <MudIconButton Icon="@Icons.Filled.AddBox" Edge="Edge.Start" @onclick="@(e => Navigate("/add-view"))" />
-                <MudSpacer />
+                
                 <MudText Typo="Typo.h5">Pers&ouml;nliche Adressverwaltung</MudText>
+                    
+                <MudSpacer />
+
+                <MudMenu Size="Size.Large">
+                    <ActivatorContent>
+                        <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">@selectedAccountName</MudChip>
+                    </ActivatorContent>
+                    <ChildContent>
+                        @foreach (var account in accountList)
+                        {
+                            <MudMenuItem OnClick="@(()=>{selectedAccount=account; this.refreshAccount();})">@account.name</MudMenuItem>
+                        }
+                        <MudDivider/>
+                        <MudMenuItem OnClick="@(()=>{showAddAccount=true;})">Account Hinzufügen</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
             </MudAppBar>
+
+            <MudDialog @bind-IsVisible="showAddAccount">
+                <DialogContent>
+                    Um einen neuen Account hinzuzufügen wählen Sie einen Namen:
+                    <MudTextField T="string" Label="Name" @bind-Value="newAccountName"></MudTextField>
+                </DialogContent>
+                <DialogActions>
+                    <MudButton OnClick="@(()=>{showAddAccount=false;})">Cancel</MudButton>
+                    <MudButton Color="Color.Primary" OnClick="addAccount">Hinzufügen</MudButton>
+                </DialogActions>
+            </MudDialog>
 
             <div class="contact-pane row">      
                 <MudPaper Class="overflow-scroll" Width="25%" Height="600px">
@@ -23,6 +53,7 @@
                         <MudText Typo="Typo.h6" GutterBottom="true">Kontakt&uuml;bersicht</MudText>
                     </MudContainer>
                     <MudContainer MaxWidth="MaxWidth.Small">
+                        <MudTextField T="string" Label="Suchen" OnKeyUp="@(()=>{searchContactList();})" @bind-Value="searchValue"></MudTextField>
                         <MudList Clickable="true" SelectedValue="@selectedContact" >
                         <MudListSubheader>
                             @contactList.Count Kontakte
@@ -47,8 +78,13 @@
 @code {
     private MudTheme Theme = new MudTheme();
     private Contact selectedContact;
+    private Account selectedAccount;
     private List<Contact> contactList = new List<Contact>();
+    private List<Account> accountList = new List<Account>();
     private string searchValue;
+    private bool showAddAccount=false;
+    private string newAccountName = "";
+    private string selectedAccountName = "";
 
     EventCallback refreshMain => EventCallback.Factory.Create(this, refresh);
 
@@ -59,12 +95,25 @@
 
     protected override async Task OnInitializedAsync()
     {
-        contactList = await ContactManagerService.getContactList();
+        accountList = await ContactManagerService.getAccountList();
+        selectedAccount = accountList.First();
+        selectedAccountName = selectedAccount.name;
+        ContactManagerService.setSelectedAccount(selectedAccount);
+
+        await this.refresh();
     }
 
     private async Task refresh()
     {
-        contactList = await ContactManagerService.getContactList();
+        contactList = await ContactManagerService.getContactsForAccount(selectedAccount);
+        accountList = await ContactManagerService.getAccountList();
+    }
+
+    private async Task refreshAccount()
+    {
+        selectedAccountName = selectedAccount.name;
+        await this.refresh();
+        this.Navigate("/");
     }
 
     private void showContact()
@@ -74,5 +123,31 @@
         this.Navigate($"/detail-view/{selectedContact.name}");
     }
 
+    private void addAccount()
+    {
+        Account newAccount = new Account(newAccountName);
+        newAccount.Id = accountList.Count + 1;
+        newAccountName = "";
+        showAddAccount = false;
+        selectedAccount = newAccount;
+        selectedAccountName = newAccount.name;
+
+        ContactManagerService.addAccount(newAccount);
+        ContactManagerService.setSelectedAccount(selectedAccount);
+        this.refresh();
+        this.Navigate("/");
+    }
+
+    private void searchContactList()
+    {
+        this.refresh();
+
+        contactList = contactList.FindAll(
+            delegate (Contact contact)
+            {
+                return contact.name.Contains(searchValue);
+            }
+        );
+    }
 }
 

@@ -13,5 +13,6 @@ namespace ContactManager.Server.Data
 
         public DbSet<Contact>? Contacts { get; set; }
 
+        public DbSet<Account>? Accounts { get; set; }
     }
 }
